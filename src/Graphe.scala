@@ -4,14 +4,14 @@ class Graphe(val head: Array[Int], val succ: Array[Int], val dist: Array[Int], v
 
   def relax(s: Int, u: Int, i: Int){
     if( ( D(s)(u) + dist(i) ) >= 0 && D(s)(succ(i)) > (D(s)(u) + dist(i)) )
-      //First condition to avoid the overflow in case of D(s)(u) or dist(i) = infinity
+      //First condition to avoid the overflow in the case of D(s)(u) or dist(i) = infinity
       D(s)(succ(i)) = D(s)(u) + dist(i)
   }
 
   def dijkstra(s: Int){
     D(s)(s) = 0
-    var N = Set(0, (head.length-1))
-    while(N.size < head.length){
+    var N = Set(0)
+    while(N.size < (head.length -1)){
       var u = Int.MaxValue
       for( i <- D(s).indices.filter({x: Int => !(N.contains(x))}) )
         if(u >= D(s)(i))
