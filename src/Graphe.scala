@@ -12,9 +12,9 @@ class Graphe(val head: Array[Int], val succ: Array[Int], val dist: Array[Int], v
     D(s)(s) = 0
     var N = Set(0)
     while(N.size < (head.length -1)){
-      var u = Int.MaxValue
+      var u = 0
       for( i <- D(s).indices.filter({x: Int => !(N.contains(x))}) )
-        if(u >= D(s)(i))
+        if(D(s)(u) >= D(s)(i))
           u = i
       N = N+u
       for( i <- head(u) to (head(u+1) -1) )
