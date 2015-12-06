@@ -4,7 +4,8 @@ object Methaeuristic {
     var t = List[Tuple2[Int, Int]]()
     for (i <- 1 to (CC.head.length - 2))
       for (j <- CC.head(i) to (CC.head(i + 1) - 1))
-        t = (i, CC.succ(j)) :: t
+        if(CC.succ(j) != 0)
+          t = (i, CC.succ(j)) :: t
     t
   }
 
@@ -29,6 +30,18 @@ object Methaeuristic {
     var max = Int.MinValue
     edges.foreach(i => edges.foreach(j => if(!edgeEquality(i, j) && distance(CC, i, j) > max) max = distance(CC, i, j)))
     max
+  }
+
+  /**
+    *
+    * @param alpha randomize rate
+    * @param graph the graph to analyze
+    * @param n the graph will be divided in n connected component
+    */
+  def glouton_proba(alpha: Double, graph: Graphe, n: Int): Array[List[Tuple2[Int, Int]]] = {
+    val CC = Array.fill[List[Tuple2[Int,Int]]](n)(List())
+    //val edges = computeEdges()
+    CC
   }
 
 }

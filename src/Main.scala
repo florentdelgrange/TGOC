@@ -11,13 +11,23 @@ object Main {
     dijkstraTest(graph.D)
     println("Arrêtes : " ,Methaeuristic.computeEdges(graph))
     println("Compacity of the Graph : ", Methaeuristic.compacity(graph))
+    var cc = graph.createCC((1,2))
+    cc.addEdge((2,6))
+    cc.fullDijkstraUpdate()
+    dijkstraTest(cc.D)
+    cc.head.foreach(i => print(i))
+    println()
+    cc.succ.foreach(i => print(i))
+    println()
+    println("Arrêtes de la composante connexe : "+ Methaeuristic.computeEdges(cc))
   }
 
   def dijkstraTest(D: Array[Array[Int]]): Unit ={
     for(i<- 1 to D.length -1) {
       println("Plus courts chemins du sommet ", i, " à : ")
       for (j <- 1 to D(i).length - 1)
-        println("---> ", j, " = ", D(i)(j))
+        if(D(i)(j) != Int.MaxValue)
+          println("---> ", j, " = ", D(i)(j))
     }
   }
 
