@@ -1,4 +1,4 @@
-class Graphe(val head: Array[Int], val succ: Array[Int], val dist: Array[Int], val prospectus: Array[Int], var size: Int){
+class Graphe(val head: Array[Int], var succ: Array[Int], val dist: Array[Int], val prospectus: Array[Int], var size: Int) {
 
   def this(head: Array[Int], succ: Array[Int], dist: Array[Int], prospectus: Array[Int]){
     this(head, succ, dist, prospectus, head.length -1 )
@@ -42,22 +42,40 @@ class Graphe(val head: Array[Int], val succ: Array[Int], val dist: Array[Int], v
 
   class CC(father: Graphe) extends Graphe(head, Array.fill[Int](succ.length)(0), dist, prospectus, 1){
 
-    def addEdge(edge: Tuple2[Int,Int]): Unit ={
-      if(!G.contains(edge._1)){
-        G = G + edge._1
-        size = size +1
+    var prospectusCovered = 0
+    var distCovered = 0
+
+    def addEdge(edge: Tuple2[Int,Int]): Unit = {
+      if (!G.contains(edge._1) || !G.contains(edge._2)) {
+        if (!G.contains(edge._1)) {
+          G = G + edge._1
+          size = size + 1
+        }
+        if (!G.contains(edge._2)) {
+          G = G + edge._2
+          size = size + 1
+        }
+        for (i <- father.head(edge._1) to father.head(edge._1 + 1) - 1) {
+          if (father.succ(i) == edge._2) {
+            succ(i) = edge._2
+            prospectusCovered += prospectus(i)
+            distCovered += dist(i)
+          }
+        }
+        for (i <- father.head(edge._2) to father.head(edge._2 + 1) - 1)
+          if (father.succ(i) == edge._1)
+            succ(i) = edge._1
       }
-      if(!G.contains(edge._2)){
-        G = G + edge._2
-        size = size +1
-      }
-      for( i<- father.head(edge._1) to father.head(edge._1+1) -1 ) {
-        if (father.succ(i) == edge._2)
-          succ(i) = edge._2
-      }
-      for( i<- father.head(edge._2) to father.head(edge._2+1) -1 )
-        if(father.succ(i) == edge._1)
-          succ(i) = edge._1
+    }
+
+    def copy(): CC ={
+      val cc = new CC(father)
+      cc.G = G.filter(x => true)
+      cc.prospectusCovered = prospectusCovered
+      cc.distCovered = distCovered
+      cc.size = size
+      cc.succ = succ.filter(x => true)
+      cc
     }
 
   }

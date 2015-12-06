@@ -38,10 +38,43 @@ object Methaeuristic {
     * @param graph the graph to analyze
     * @param n the graph will be divided in n connected component
     */
-  def glouton_proba(alpha: Double, graph: Graphe, n: Int): Array[List[Tuple2[Int, Int]]] = {
-    val CC = Array.fill[List[Tuple2[Int,Int]]](n)(List())
-    //val edges = computeEdges()
-    CC
+  def glouton_proba(alpha: Double, graph: Graphe, n: Int): Array[Graphe] = {
+    val CCs = Array.fill[graph.CC](n)(null)
+    def cost(edge: Tuple2[Int, Int]): Double = {
+      for (i <- graph.head(edge._1) to graph.head(edge._1 + 1) - 1)
+        if (graph.succ(i) == edge._2)
+          return Int.int2double(graph.prospectus(i)) / Int.int2double(graph.dist(i))
+      Double.MaxValue
+    }
+    var edges = computeEdges(graph)
+    def find_min_edge(edges : List[Tuple2[Int,Int]], min_cost: Double, min: Tuple2[Int,Int]): Tuple2[Int,Int] = edges match{
+      case Nil => min
+      case head :: tail => if(cost(head) <= cost(min))
+        find_min_edge(tail, cost(head), head)
+        else find_min_edge(tail, min_cost, min)
+    }
+    var S = Set[Tuple2[Int, Int]]()
+    for(i<-0 to n-1){
+      var min = find_min_edge(edges, cost(edges.head), edges.head)
+      S = S + min + min.swap
+      CCs(i) = graph.createCC(min)
+    }
+
+    def cost(CC: graph.CC): Double ={
+      var prospectusSum = 0.
+      var distSum = 0.
+      var compacitySum = 0.
+      CCs.foreach({CC => prospectusSum += CC.prospectusCovered; distSum += CC.distCovered; compacitySum += compacity(CC)})
+      if(CCs.contains(CC))
+        Math.abs(CC.prospectusCovered/prospectusSum -1) + Math.abs(CC.distCovered/distSum -1) + Math.abs(compacity(CC)/compacitySum)
+      else
+        Math.abs(CC.prospectusCovered/(prospectusSum+CC.prospectusCovered) -1) + Math.abs(CC.distCovered/(distSum+CC.distCovered) -1) + Math.abs(compacity(CC)/(compacitySum + compacity(CC))
+    }
+
+    while(S.size != edges.length){
+
+    }
+    CCs
   }
 
 }
