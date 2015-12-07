@@ -4,7 +4,7 @@ class Graphe(val head: Array[Int], var succ: Array[Int], val dist: Array[Int], v
     this(head, succ, dist, prospectus, head.length -1 )
   }
 
-  val D = Array.fill[Array[Int]](head.length -1)(Array.fill[Int](head.length -1)(Int.MaxValue))
+  var D = Array.fill[Array[Int]](head.length -1)(Array.fill[Int](head.length -1)(Int.MaxValue))
   var G = (head.indices.toSet - 0) - size
 
   def relax(s: Int, u: Int, i: Int){
@@ -46,36 +46,55 @@ class Graphe(val head: Array[Int], var succ: Array[Int], val dist: Array[Int], v
     var distCovered = 0
 
     def addEdge(edge: Tuple2[Int,Int]): Unit = {
-      if (!G.contains(edge._1) || !G.contains(edge._2)) {
-        if (!G.contains(edge._1)) {
-          G = G + edge._1
-          size = size + 1
-        }
-        if (!G.contains(edge._2)) {
-          G = G + edge._2
-          size = size + 1
-        }
-        for (i <- father.head(edge._1) to father.head(edge._1 + 1) - 1) {
-          if (father.succ(i) == edge._2) {
-            succ(i) = edge._2
-            prospectusCovered += prospectus(i)
-            distCovered += dist(i)
-          }
-        }
-        for (i <- father.head(edge._2) to father.head(edge._2 + 1) - 1)
-          if (father.succ(i) == edge._1)
-            succ(i) = edge._1
+      D = Array.fill[Array[Int]](head.length -1)(Array.fill[Int](head.length -1)(Int.MaxValue))
+      if (!G.contains(edge._1)) {
+        G = G + edge._1
+        size = size + 1
       }
+      if (!G.contains(edge._2)) {
+        G = G + edge._2
+        size = size + 1
+      }
+      for (i <- father.head(edge._1) to father.head(edge._1 + 1) - 1) {
+        if (father.succ(i) == edge._2) {
+          succ(i) = edge._2
+          prospectusCovered += prospectus(i)
+          distCovered += dist(i)
+        }
+      }
+      for (i <- father.head(edge._2) to father.head(edge._2 + 1) - 1)
+        if (father.succ(i) == edge._1)
+          succ(i) = edge._1
     }
 
-    def copy(): CC ={
-      val cc = new CC(father)
-      cc.G = G.filter(x => true)
-      cc.prospectusCovered = prospectusCovered
-      cc.distCovered = distCovered
-      cc.size = size
-      cc.succ = succ.filter(x => true)
-      cc
+    def subEdge(edge: Tuple2[Int, Int]): Unit ={
+      D = Array.fill[Array[Int]](head.length -1)(Array.fill[Int](head.length -1)(Int.MaxValue))
+      for(i<- head(edge._1) to head(edge._1 +1)-1)
+        if(succ(i) == edge._2) {
+          succ(i) = 0
+          prospectusCovered -= prospectus(i)
+          distCovered -= dist(i)
+        }
+      for(i<- head(edge._2) to head(edge._2 +1) -1)
+        if(succ(i) == edge._1)
+          succ(i) = 0
+      //Now check if it exists an edge with edge._1 or edge._2 as vertex
+      var noEdges = true
+      for(i<- head(edge._1) to head(edge._1 +1) -1)
+        if(succ(i) != 0)
+          noEdges = false
+      if(noEdges) {
+        G = G - edge._1
+        size -= 1
+      }
+      noEdges = true
+      for(i<- head(edge._2) to head(edge._2 +1) -1)
+        if(succ(i) != 0)
+          noEdges = false
+      if(noEdges) {
+        G = G - edge._2
+        size -= 1
+      }
     }
 
   }
