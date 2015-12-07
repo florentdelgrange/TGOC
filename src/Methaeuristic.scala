@@ -48,47 +48,51 @@ object Methaeuristic {
         Double.MaxValue
       }
 
-    def find_min_edge(graph: Graphe, edges: List[Tuple2[Int, Int]], min_cost: Double, min: Tuple2[Int, Int]): Tuple2[Int, Int] = edges match {
+    /**
+      * Find the edge with the min cost in the graph
+      */
+    def find_min_edge(graph: Graphe, edges: List[Tuple2[Int, Int]], min_cost: Double, min: Tuple2[Int, Int], S: Set[(Int,Int)]): Tuple2[Int, Int] = edges match {
         case Nil => min
-        case head :: tail => if (cost(graph, head) <= cost(graph, min))
-          find_min_edge(graph, tail, cost(graph, head), head)
-        else find_min_edge(graph, tail, min_cost, min)
+        case head :: tail => if (cost(graph, head) <= cost(graph, min) && !S.contains(head))
+          find_min_edge(graph, tail, cost(graph, head), head, S)
+        else find_min_edge(graph, tail, min_cost, min, S)
       }
 
     /**
-      *
-      * @param alpha randomize rate
-      * @param graph the graph to analyze
-      * @param n the graph will be divided in n connected component
+      * Apply the GRASP algorithm on the graph to divide it to n connected component
+      * @param n the graph will be divided to n connected component
+      * @param graph the graph to divide
+      * @param maxIter maximal iterations
+      * @return the connected components
       */
-    def glouton_proba(alpha: Double, graph: Graphe, n: Int): Array[graph.CC] = {
-      val CCs = Array.fill[graph.CC](n)(null)
-      val edges = computeEdges(graph)
-      var S = Set[Tuple2[Int, Int]]()
-      var min = (0,0)
-      for (i <- 0 to n - 1) {
-        min = find_min_edge(graph, edges, cost(graph, edges.head), edges.head)
-        S = S + min + min.swap
-        CCs(i) = graph.createCC(min)
+    def compute(n: Int, graph: Graphe, maxIter: Int): Array[graph.CC] = {
+      def graphCost(CC: graph.CC, CCs: Array[graph.CC]): Double ={
+        var prospectusSum = 0D
+        var distSum = 0D
+        var compacitySum = 0D
+        CCs.foreach({CC =>
+          prospectusSum += CC.prospectusCovered;
+          distSum += CC.distCovered;
+          if(computeEdges(CC).length > 4)
+            compacitySum += compacity(CC)
+        })
+        println("Coût de la CC >> " + computeEdges(CC) + " \n >> prospectus : " + CC.prospectusCovered + "/" + prospectusSum/n + "\n >> distance : " + CC.distCovered + "/" + distSum/n)
+        var cost = Math.abs(CC.prospectusCovered/(prospectusSum/n) -1) + Math.abs(CC.distCovered/(distSum/n) -1)
+        //if(compacitySum >0)
+          //cost += Math.abs(compacity(CC)/(compacitySum/n))
+        println(cost)
+        cost
       }
 
-      def graphCost(CC: graph.CC): Double ={
-        var prospectusSum = 0
-        var distSum = 0
-        var compacitySum = 0
-        CCs.foreach({CC => prospectusSum += CC.prospectusCovered; distSum += CC.distCovered; compacitySum += compacity(CC)})
-        Math.abs(CC.prospectusCovered/(prospectusSum/n) -1) + Math.abs(CC.distCovered/(distSum/n) -1) + Math.abs(compacity(CC)/(compacitySum/n))
-      }
-      def probaComputing(alpha: Double, S: Set[Tuple2[Int,Int]], cc: graph.CC): Tuple2[Int,Int] = {
+      def probaComputing(alpha: Double, S: Set[Tuple2[Int,Int]], cc: graph.CC, CCs: Array[graph.CC]): Tuple2[Int,Int] = {
         var possibilities = cc.computeEdgePossibilities()
         var costList = List[((Int,Int),Double)]()
         possibilities.foreach( edge =>
           if(!S.contains(edge)) {
             cc.addEdge(edge)
-            costList = (edge, graphCost(cc)) :: costList
+            costList = (edge, graphCost(cc, CCs)) :: costList
             cc.subEdge(edge)
-          }
-        )
+          })
         var min = costList.minBy(tuple => tuple._2)._2
         var max = costList.maxBy(tuple => tuple._2)._2
         var RCL = List[(Int,Int)]()
@@ -97,10 +101,42 @@ object Methaeuristic {
         })
         RCL.toVector(new Random().nextInt(RCL.length))
       }
-      while(S.size != edges.length){
-        var cc = CCs.minBy(x => if(x.computeEdgePossibilities() != List()) graphCost(x) else Double.MaxValue)
-        var e = probaComputing(alpha, S, cc)
-        S = (S + e) + e.swap
+
+      def greedy_proba(alpha: Double): Array[graph.CC] = {
+        val CCs = Array.fill[graph.CC](n)(null)
+        val edges = computeEdges(graph)
+        var S = Set[Tuple2[Int, Int]]()
+        var min = (0,0)
+        for (i <- 0 to n - 1) {
+          min = find_min_edge(graph, edges, cost(graph, edges.head), edges.head, S)
+          S = S + min + min.swap
+          CCs(i) = graph.createCC(min)
+        }
+        while(S.size != edges.length){
+          var i=0
+          var cc = CCs.minBy(x => if(x.computeEdgePossibilities().toSet + S != S) graphCost(x, CCs) else Double.MaxValue)
+          var e = probaComputing(alpha, S, cc, CCs)
+          cc.addEdge(e)
+          S = (S + e) + e.swap
+        }
+        CCs
+      }
+
+      def score(CCs: Array[graph.CC]): Double ={
+        var sum:Double = 0
+        CCs.foreach(cc => sum = sum + graphCost(cc, CCs))
+        sum
+      }
+
+      val step: Double = 1D/maxIter
+      var CCsScore = Double.MaxValue
+      var CCs = Array[graph.CC]()
+      for(i<- 1 to maxIter){
+        var array = greedy_proba(step * i)
+        if(score(array) <= CCsScore) {
+          CCsScore = score(CCs)
+          CCs = array
+        }
       }
       CCs
     }

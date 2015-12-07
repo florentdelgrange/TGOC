@@ -42,8 +42,8 @@ class Graphe(val head: Array[Int], var succ: Array[Int], val dist: Array[Int], v
 
   class CC(father: Graphe) extends Graphe(head, Array.fill[Int](succ.length)(0), dist, prospectus, 1){
 
-    var prospectusCovered = 0
-    var distCovered = 0
+    var prospectusCovered = 0D
+    var distCovered = 0D
 
     def computeEdgePossibilities(): List[(Int, Int)] ={
       var list = List[(Int, Int)]()
