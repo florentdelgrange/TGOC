@@ -20,6 +20,7 @@ object Main {
     cc.fullDijkstraUpdate() ;dijkstraTest(cc.D)
     cc.succ.foreach(i => print(i)) ; println()
     println("Compacity of the CC : " + Methaeuristic.compacity(cc))
+    println("Edge possibilities : " + cc.computeEdgePossibilities())
   }
 
   def dijkstraTest(D: Array[Array[Int]]): Unit ={

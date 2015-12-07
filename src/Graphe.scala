@@ -45,6 +45,12 @@ class Graphe(val head: Array[Int], var succ: Array[Int], val dist: Array[Int], v
     var prospectusCovered = 0
     var distCovered = 0
 
+    def computeEdgePossibilities(): List[(Int, Int)] ={
+      var list = List[(Int, Int)]()
+      G.foreach(x => for(i <- head(x) to head(x+1) -1) if(succ(i) == 0) list = (x,father.succ(i)) :: list)
+      list
+    }
+
     def addEdge(edge: Tuple2[Int,Int]): Unit = {
       D = Array.fill[Array[Int]](head.length -1)(Array.fill[Int](head.length -1)(Int.MaxValue))
       if (!G.contains(edge._1)) {
