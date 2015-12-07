@@ -1,3 +1,5 @@
+import scala.util.Random
+
 object Methaeuristic {
 
   def computeEdges(CC : Graphe): List[Tuple2[Int,Int]] = {
@@ -77,12 +79,28 @@ object Methaeuristic {
         CCs.foreach({CC => prospectusSum += CC.prospectusCovered; distSum += CC.distCovered; compacitySum += compacity(CC)})
         Math.abs(CC.prospectusCovered/(prospectusSum/n) -1) + Math.abs(CC.distCovered/(distSum/n) -1) + Math.abs(compacity(CC)/(compacitySum/n))
       }
-      def computePossibilities()
       def probaComputing(alpha: Double, S: Set[Tuple2[Int,Int]], cc: graph.CC): Tuple2[Int,Int] = {
-
+        var possibilities = cc.computeEdgePossibilities()
+        var costList = List[((Int,Int),Double)]()
+        possibilities.foreach( edge =>
+          if(!S.contains(edge)) {
+            cc.addEdge(edge)
+            costList = (edge, graphCost(cc)) :: costList
+            cc.subEdge(edge)
+          }
+        )
+        var min = costList.minBy(tuple => tuple._2)._2
+        var max = costList.maxBy(tuple => tuple._2)._2
+        var RCL = List[(Int,Int)]()
+        costList.foreach({ tuple =>
+          if(tuple._2 <= min + alpha * (max-min)) RCL = tuple._1 :: RCL
+        })
+        RCL.toVector(new Random().nextInt(RCL.length))
       }
       while(S.size != edges.length){
-        var cc = CCs.minBy(x => graphCost(x))
+        var cc = CCs.minBy(x => if(x.computeEdgePossibilities() != List()) graphCost(x) else Double.MaxValue)
+        var e = probaComputing(alpha, S, cc)
+        S = (S + e) + e.swap
       }
       CCs
     }
