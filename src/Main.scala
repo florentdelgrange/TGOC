@@ -21,8 +21,9 @@ object Main {
     cc.succ.foreach(i => print(i)) ; println()
     println("Compacity of the CC : " + Methaeuristic.compacity(cc))
     println("Edge possibilities : " + cc.computeEdgePossibilities())
-    var CCs = Methaeuristic.GRASP.compute(3, graph, 10)
+    var CCs = Methaeuristic.GRASP.compute(3, graph, 1000)
     CCs.foreach(cc => println(Methaeuristic.computeEdges(cc)))
+    //CCs.foreach(cc => println("Prospectus : "+ cc.prospectusCovered + ", distance : " + cc.distCovered + ", compacity : "+ Methaeuristic.compacity(cc)))
   }
 
   def dijkstraTest(D: Array[Array[Int]]): Unit ={

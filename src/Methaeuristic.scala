@@ -30,7 +30,9 @@ object Methaeuristic {
     CC.fullDijkstraUpdate()
     val edges = computeEdges(CC)
     var max = Int.MinValue
-    edges.foreach(i => edges.foreach(j => if(!edgeEquality(i, j) && distance(CC, i, j) > max) max = distance(CC, i, j)))
+    edges.foreach(i => edges.foreach({j => if(!edgeEquality(i, j) && distance(CC, i, j) > max) max = distance(CC, i, j);
+      if(max > 10000) println("overflow on" + i +" to "+j +
+        CC.D(i._1)(j._1) +" "+  CC.D(i._1)(j._2) +" "+ CC.D(i._2)(j._1) +" "+CC.D(i._2)(j._2)+" max = "+max)}))
     max
   }
 
@@ -44,7 +46,7 @@ object Methaeuristic {
     def cost(graph: Graphe, edge: (Int,Int)): Double = {
         for (i <- graph.head(edge._1) to graph.head(edge._1 + 1) - 1)
           if (graph.succ(i) == edge._2)
-            return Int.int2double(graph.prospectus(i)) / Int.int2double(graph.dist(i))
+            return Int.int2double(graph.prospectus(i)) + Int.int2double(graph.dist(i))
         Double.MaxValue
       }
 
@@ -67,21 +69,29 @@ object Methaeuristic {
       */
     def compute(n: Int, graph: Graphe, maxIter: Int): Array[graph.CC] = {
       def graphCost(CC: graph.CC, CCs: Array[graph.CC]): Double ={
-        var prospectusSum = 0D
-        var distSum = 0D
-        var compacitySum = 0D
-        CCs.foreach({CC =>
-          prospectusSum += CC.prospectusCovered;
-          distSum += CC.distCovered;
-          if(computeEdges(CC).length > 4)
-            compacitySum += compacity(CC)
-        })
-        println("Coût de la CC >> " + computeEdges(CC) + " \n >> prospectus : " + CC.prospectusCovered + "/" + prospectusSum/n + "\n >> distance : " + CC.distCovered + "/" + distSum/n)
-        var cost = Math.abs(CC.prospectusCovered/(prospectusSum/n) -1) + Math.abs(CC.distCovered/(distSum/n) -1)
-        //if(compacitySum >0)
-          //cost += Math.abs(compacity(CC)/(compacitySum/n))
-        println(cost)
-        cost
+        var sumDist = 0D; var sumProspectus = 0D; var sumCompacity = 0D
+        for(i<-0 to CCs.length -1) {
+          sumDist += Math.abs(CC.distCovered - CCs(i).distCovered)
+          sumProspectus += Math.abs(CC.prospectusCovered - CCs(i).prospectusCovered)
+          val compacitycc = compacity(CC); val compacitycci = compacity(CCs(i))
+          if(compacitycc > 0 && compacitycc<Int.MaxValue && compacitycci>0 && compacitycci < Int.MaxValue)
+            sumCompacity += Math.abs(compacitycc - compacitycci)
+        }
+        sumDist + sumProspectus + sumCompacity
+      }
+
+      def graphScore(CC: graph.CC, CCs: Array[graph.CC]): Double ={
+        var sumDist = 0D; var sumProspectus = 0D; var sumCompacity = 0D; val compacitycc = compacity(CC)
+        for(i<-0 to CCs.length -1) {
+          sumDist += CCs(i).distCovered
+          sumProspectus += CC.prospectusCovered - CCs(i).prospectusCovered
+          val compacitycci = compacity(CCs(i));
+          if(compacitycc>0 && compacitycc<Int.MaxValue && compacitycci>0 && compacitycci < Int.MaxValue)
+            sumCompacity += compacitycc - compacitycci
+        }
+        var comp = 0D
+        if(sumCompacity>0) comp = n*compacitycc /sumCompacity
+        (n*CC.distCovered/sumDist) + (n*CC.prospectusCovered/sumProspectus) + comp
       }
 
       def probaComputing(alpha: Double, S: Set[Tuple2[Int,Int]], cc: graph.CC, CCs: Array[graph.CC]): Tuple2[Int,Int] = {
@@ -93,8 +103,8 @@ object Methaeuristic {
             costList = (edge, graphCost(cc, CCs)) :: costList
             cc.subEdge(edge)
           })
-        var min = costList.minBy(tuple => tuple._2)._2
-        var max = costList.maxBy(tuple => tuple._2)._2
+        val min = costList.minBy(tuple => tuple._2)._2
+        val max = costList.maxBy(tuple => tuple._2)._2
         var RCL = List[(Int,Int)]()
         costList.foreach({ tuple =>
           if(tuple._2 <= min + alpha * (max-min)) RCL = tuple._1 :: RCL
@@ -113,9 +123,14 @@ object Methaeuristic {
           CCs(i) = graph.createCC(min)
         }
         while(S.size != edges.length){
-          var i=0
-          var cc = CCs.minBy(x => if(x.computeEdgePossibilities().toSet + S != S) graphCost(x, CCs) else Double.MaxValue)
-          var e = probaComputing(alpha, S, cc, CCs)
+          val cc = CCs.minBy(x =>
+            if (S.intersect(x.computeEdgePossibilities().toSet) != x.computeEdgePossibilities().toSet)
+              graphScore(x, CCs)
+
+            else
+              Double.PositiveInfinity
+            )
+          val e = probaComputing(alpha, S, cc, CCs)
           cc.addEdge(e)
           S = (S + e) + e.swap
         }
@@ -124,7 +139,7 @@ object Methaeuristic {
 
       def score(CCs: Array[graph.CC]): Double ={
         var sum:Double = 0
-        CCs.foreach(cc => sum = sum + graphCost(cc, CCs))
+        CCs.foreach({cci => CCs.foreach(ccj => sum += Math.abs(graphCost(cci, CCs)- graphCost(ccj, CCs))); sum+=graphCost(cci, CCs)})
         sum
       }
 
@@ -133,11 +148,16 @@ object Methaeuristic {
       var CCs = Array[graph.CC]()
       for(i<- 1 to maxIter){
         var array = greedy_proba(step * i)
+        println("Essai " + i + " alpha : " + (step*i))
+        array.foreach(cc => println("CC : " + computeEdges(cc)))
+        array.foreach(cc => println("Prospectus : "+ cc.prospectusCovered + ", distance : " + cc.distCovered + ", compacity : "+ Methaeuristic.compacity(cc) + " Score : " + graphCost(cc, array)))
         if(score(array) <= CCsScore) {
-          CCsScore = score(CCs)
+          CCsScore = score(array)
           CCs = array
         }
       }
+      println("Choisi ! ")
+      CCs.foreach(cc => println("Prospectus : "+ cc.prospectusCovered + ", distance : " + cc.distCovered + ", compacity : "+ Methaeuristic.compacity(cc) + " Score : " + graphCost(cc, CCs)))
       CCs
     }
 
