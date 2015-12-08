@@ -90,7 +90,8 @@ object Methaeuristic {
             sumCompacity += compacitycc - compacitycci
         }
         var comp = 0D
-        if(sumCompacity>0) comp = n*compacitycc /sumCompacity
+        if(compacitycc>0 && compacitycc < Int.MaxValue && sumCompacity>0 && sumCompacity < Int.MaxValue)
+          comp = n*compacitycc /sumCompacity
         (n*CC.distCovered/sumDist) + (n*CC.prospectusCovered/sumProspectus) + comp
       }
 
@@ -150,14 +151,14 @@ object Methaeuristic {
         var array = greedy_proba(step * i)
         println("Essai " + i + " alpha : " + (step*i))
         array.foreach(cc => println("CC : " + computeEdges(cc)))
-        array.foreach(cc => println("Prospectus : "+ cc.prospectusCovered + ", distance : " + cc.distCovered + ", compacity : "+ Methaeuristic.compacity(cc) + " Score : " + graphCost(cc, array)))
+        array.foreach(cc => println("Prospectus : "+ cc.prospectusCovered + ", distance : " + cc.distCovered + ", compacity : "+ Methaeuristic.compacity(cc) + " Error : " + graphCost(cc, array)))
         if(score(array) <= CCsScore) {
           CCsScore = score(array)
           CCs = array
         }
       }
       println("Choisi ! ")
-      CCs.foreach(cc => println("Prospectus : "+ cc.prospectusCovered + ", distance : " + cc.distCovered + ", compacity : "+ Methaeuristic.compacity(cc) + " Score : " + graphCost(cc, CCs)))
+      CCs.foreach(cc => println("Prospectus : "+ cc.prospectusCovered + ", distance : " + cc.distCovered + ", compacity : "+ Methaeuristic.compacity(cc) + " Error : " + graphCost(cc, CCs)))
       CCs
     }
 
