@@ -1,10 +1,29 @@
 import scala.util.Random
+import scala.io.Source
 
 class Genetic{
   var parentList  = List(0)
   var popList  = List(0)
   var childList = List(0)
+//  var graph : Graphe
+  def initGraphe(file : String){
+    val lines = Source.fromFile(file).getLines().toList
 
+    val info = lines(0).split(" ")
+    val head = lines(1).split(" ")
+    val succ = lines(2).split(" ")
+    val coordx = lines(3).split(" ")
+    val coordy = lines(4).split(" ")
+    val distance = lines(5).split(" ")
+    val prospectus = lines(6).split(" ")
+
+    println("Arc " + info(0) + " Sommets "+info(1)+" Equipes  "+info(2))
+    println("HEAD : "+head.foreach(println))
+    println("SUCC : "+succ)
+    println("COORD X : "+coordx)
+    println("Distance : "+distance)
+    println("Prospectus : "+prospectus)
+  }
   def fitness(sub : Int,list : List[Int]) = sub.toFloat / list.view.map(_.toLong).sum
   def initPopulation(popSize : Int){ popList = List(4,3,2,1,100) }
 
@@ -49,6 +68,7 @@ class Genetic{
 object Genetic{
   def main(args:Array[String]){
     val gen = new Genetic()
+    gen.initGraphe("input.txt")
     gen.initPopulation(6)
     gen.selectParent(2)
     println(gen.parentList)
