@@ -46,7 +46,7 @@ object Methaeuristic {
     def cost(graph: Graphe, edge: (Int,Int)): Double = {
         for (i <- graph.head(edge._1) to graph.head(edge._1 + 1) - 1)
           if (graph.succ(i) == edge._2)
-            return Int.int2double(graph.prospectus(i)) + Int.int2double(graph.dist(i))
+            return graph.prospectus(i).toDouble + graph.dist(i).toDouble
         Double.MaxValue
       }
 

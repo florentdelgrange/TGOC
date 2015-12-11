@@ -1,0 +1,26 @@
+Pour l'algo génétique :
+	1) A l'aide de Grasp je génère une population de 100 individus
+	çàd que je génère 100 solutions
+
+	2) Pour chacune des solutions je cacule sont optimalité a l'aide d'une fct
+	suremnt déja implémenter dans grasp
+
+	3)On selectione a l'aide de la méthode de la roulette une 20 d'invidus qui
+	vont se reproduire, la méthode de la roulette nous demande d'accorder une
+	probabilté plus forte aux meilleurs individus et de selectionner les individus
+	les plus optimisés et ensuite générer un chiffre random qui nous donnera
+	l'individu a selectionné
+
+	4) une fois que l'on a ces individu on procède au croisement, pour procéder
+	au croisement l'on peu soit formuler la solution a la manière de l'output
+	ou bien trouver une autre formulation tout dépend de la minière donc la
+	fonction d'évalutation utiliser les données, on peut croiser en mettant
+	plusieurs sections dans le géntoype et en procedant a un switch des
+	différentes partie avec d'autre individu selectionné
+
+	5)On insère ensuite les nouveaux individu dans notre population on va donc
+	se retrouver avec une population de 100 + N individus
+	Pour ne pas avoir une population qui grandi on va a chaque fois evaler
+	les nouveau individus et selectionner les 100 meilleurs
+
+	6)On itére au max pour généré 500 génération
