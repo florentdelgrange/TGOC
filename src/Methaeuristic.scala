@@ -161,6 +161,5 @@ object Methaeuristic {
       CCs.foreach(cc => println("Prospectus : "+ cc.prospectusCovered + ", distance : " + cc.distCovered + ", compacity : "+ Methaeuristic.compacity(cc) + " Error : " + graphCost(cc, CCs)))
       CCs
     }
-
   }
 }
