@@ -12,7 +12,7 @@ object Main {
     val succ = Array("0") ++ lines(4).split(" ") ++ Array("0")
     val distance = Array("0") ++ lines(5).split(" ") ++ Array("0")
     val prospectus = Array("0") ++  lines(6).split(" ") ++ Array("0")
-    Array(info.map(x => x.toInt),head.map(x => x.toInt),succ.map(x => x.toInt),distance.map(x => x.toInt),prospectus.map(x => x.toInt))
+    Array(info.map(x => x.toInt),head.map(x => x.toInt),succ.map(x => x.toInt),distance.map(x => x.toInt),prospectus.map(x => x.toInt),coordx.map(x => x.toInt),coordy.map(x => x.toInt))
   }
   def main(args: Array[String]){
    val graphInfo = initGraphe("input.txt")
