@@ -1,4 +1,5 @@
 import scala.io.Source
+import java.io._
 
 object Main {
 
@@ -46,6 +47,7 @@ object Main {
     var compoConnexesListes:Array[List[(Int,Int)]] = new Array[List[(Int,Int)]](graphInfo(0)(2))
     for(i<-0 to (graphInfo(0)(2)-1) ) {
         compoConnexesListes(i) = Methaeuristic.computeEdges(CCs(i))
+        println(compoConnexesListes(i))
     }
 
 
@@ -66,6 +68,7 @@ object Main {
 
         }
     }
+    writeAnswer(result) // Write the answer in "result.txt"
 
   }
 
@@ -78,4 +81,16 @@ object Main {
     }
   }
 
+  /**
+    *
+    * @param T Array of Integer (result of the problem)
+    */
+  def writeAnswer(T: Array[Int]): Unit ={
+    val file = new File("result.txt")
+    val bw = new BufferedWriter(new FileWriter(file))
+    for (i<-0 to(T.length)-1) {
+      bw.write(T(i).toString())
+    }
+    bw.close()
+  }
 }
