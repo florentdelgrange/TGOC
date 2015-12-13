@@ -36,18 +36,16 @@ object Main {
     cc.succ.foreach(i => print(i)) ; println()
     println("Compacity of the CC : " + Methaeuristic.compacity(cc))
     println("Edge possibilities : " + cc.computeEdgePossibilities())
-    var CCs = Methaeuristic.GRASP.compute(3, graph, 1000)
+    var CCs = Methaeuristic.GRASP.compute(3, graph, args(0).toInt)
     CCs.foreach(cc => println(Methaeuristic.computeEdges(cc)))
     //CCs.foreach(cc => println("Prospectus : "+ cc.prospectusCovered + ", distance : " + cc.distCovered + ", compacity : "+ Methaeuristic.compacity(cc)))
 
-    println("EST CE QUE CA MARCHE"+CCs(0).distCovered)
     /* Clem l'attrapeur */
 
     //Chaque entrée du tableau sera une liste de tuples (chaque compo connexe est une liste de tuples)
     var compoConnexesListes:Array[List[(Int,Int)]] = new Array[List[(Int,Int)]](graphInfo(0)(2))
     for(i<-0 to (graphInfo(0)(2)-1) ) {
         compoConnexesListes(i) = Methaeuristic.computeEdges(CCs(i))
-        println(compoConnexesListes(i))
     }
 
 

@@ -65,7 +65,7 @@ class Gui extends JFrame{
     }
 
     public static void main(String []args){
-        String fileName = "input.txt";
+        String fileName = args[0];
 
         //We get the array of array of int from the scala compiled into java bytecode (Main$), MODULE$ is the location of its singleton
         int values[][] = Main$.MODULE$.initGraphe(fileName);
@@ -77,7 +77,9 @@ class Gui extends JFrame{
         int[] y = Arrays.copyOfRange(values[6], 0, values[6].length);
 
         //We launch the algorithm (I need to give it an array of String even if it is never used)
-        String compulsoryParams[] = {"a","b"};
+        String[] compulsoryParams = new String[1];
+        compulsoryParams[0] = args[1];
+
         Main$.MODULE$.main(compulsoryParams);
 
         //After the computation we take the result
