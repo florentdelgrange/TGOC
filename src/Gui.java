@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 class Gui extends JFrame{
 
+    private int[] result;
     private int[] head; // = {1,   3,    6,   9,  11,   14,  18,  22,  25, 28,   32,  36,  39,  41,  44,  47, 49};
     private int[] x; // =    {0,   0,    0,   0,  200, 200, 200, 200, 450, 450, 450, 450, 750, 750, 750, 750};
     private int[] y; // =    {0, 350,  600,  950,   0, 350, 600, 950,   0, 350, 600, 950,   0, 350, 600, 950};
@@ -20,11 +21,12 @@ class Gui extends JFrame{
      * @param x x coordinates
      * @param y y coordinates
      */
-    public Gui(int[] head, int[] succ, int[] x, int[] y){
+    public Gui(int[] head, int[] succ, int[] x, int[] y, int[] result){
         this.head = head;
         this.x =x;
         this.y = y;
         this.succ = succ;
+        this.result = result;
         JPanel panel = new JPanel();
         getContentPane().add(panel);
         setSize(1280,720);
@@ -42,6 +44,18 @@ class Gui extends JFrame{
 
         for (int u = 0; u < head.length-1; u++) {
             for (int j = 0; j < head[u+1]-head[u]; j++) {
+                switch(result[acc]%3) { //TODO pas le trois en brut
+                    case 0 :
+                        g2.setColor(Color.RED);
+                        break;
+                    case 1 :
+                        g2.setColor(Color.BLUE);
+                        break;
+                    case 2 :
+                        g2.setColor(Color.GREEN);
+                        break;
+
+                }
                 g2.drawLine(50 + x[u] / 2, 50 + y[u] / 2, 50 + x[succ[acc]-1] / 2, 50 + y[succ[acc]-1] / 2);
                 acc++;
             }
@@ -74,7 +88,10 @@ class Gui extends JFrame{
         String compulsoryParams[] = {"a","b"};
         Main$.MODULE$.main(compulsoryParams);
 
-        Gui window =new Gui(head, succ, x ,y);
+        //After the computation we take the result
+        int[] result = Main$.MODULE$.result();
+
+        Gui window =new Gui(head, succ, x ,y, result);
         window.setVisible(true);
     }
 }
