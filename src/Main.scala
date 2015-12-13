@@ -30,7 +30,6 @@ object Main {
     //Chaque entrée du tableau sera une liste de tuples (chaque compo connexe est une liste de tuples)
     var compoConnexesListes:Array[List[(Int,Int)]] = new Array[List[(Int,Int)]](graphInfo(0)(2))
     for(i<-0 to (graphInfo(0)(2)-1) ) {
-        println("TEST "+ graphInfo(0)(2))
         compoConnexesListes(i) = Methaeuristic.computeEdges(CCs(i))
     }
 
