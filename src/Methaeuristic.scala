@@ -149,15 +149,17 @@ object Methaeuristic {
       var CCs = Array[graph.CC]()
       for(i<- 1 to maxIter){
         var array = greedy_proba(step * i)
-        println("Essai " + i + " alpha : " + (step*i))
         array.foreach(cc => println("CC : " + computeEdges(cc)))
         array.foreach(cc => println("Prospectus : "+ cc.prospectusCovered + ", distance : " + cc.distCovered + ", compacity : "+ Methaeuristic.compacity(cc) + " Error : " + graphCost(cc, array)))
         if(score(array) <= CCsScore) {
+          println("Meilleures composantes connexes trouvées : essai " + i)
+          array.foreach(cc => println("CC : " + computeEdges(cc)))
+          array.foreach(cc => println("Prospectus : "+ cc.prospectusCovered + ", distance : " + cc.distCovered + ", compacity : "+ Methaeuristic.compacity(cc) + " Error : " + graphCost(cc, array)))
           CCsScore = score(array)
           CCs = array
         }
       }
-      println("Choisi ! ")
+      println("Composantes connexes choisies : ")
       CCs.foreach(cc => println("Prospectus : "+ cc.prospectusCovered + ", distance : " + cc.distCovered + ", compacity : "+ Methaeuristic.compacity(cc) + " Error : " + graphCost(cc, CCs)))
       CCs
     }
