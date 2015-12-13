@@ -21,7 +21,7 @@ object Main {
   def main(args: Array[String]){
     val graphInfo = initGraphe(args(0))
     val graph = new Graphe(graphInfo(1),graphInfo(2),graphInfo(3),graphInfo(4))
-    var CCs = Methaeuristic.GRASP.compute(3, graph, args(1).toInt)
+    var CCs = Methaeuristic.GRASP.compute(graphInfo(0)(2), graph, args(1).toInt)
     CCs.foreach(cc => println(Methaeuristic.computeEdges(cc)))
     //CCs.foreach(cc => println("Prospectus : "+ cc.prospectusCovered + ", distance : " + cc.distCovered + ", compacity : "+ Methaeuristic.compacity(cc)))
 
@@ -30,6 +30,7 @@ object Main {
     //Chaque entrée du tableau sera une liste de tuples (chaque compo connexe est une liste de tuples)
     var compoConnexesListes:Array[List[(Int,Int)]] = new Array[List[(Int,Int)]](graphInfo(0)(2))
     for(i<-0 to (graphInfo(0)(2)-1) ) {
+        println("TEST "+ graphInfo(0)(2))
         compoConnexesListes(i) = Methaeuristic.computeEdges(CCs(i))
     }
 
