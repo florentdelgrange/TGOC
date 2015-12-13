@@ -76,11 +76,8 @@ class Gui extends JFrame{
         int[] x = Arrays.copyOfRange(values[5], 0, values[5].length);
         int[] y = Arrays.copyOfRange(values[6], 0, values[6].length);
 
-        //We launch the algorithm (I need to give it an array of String even if it is never used)
-        String[] compulsoryParams = new String[1];
-        compulsoryParams[0] = args[1];
-
-        Main$.MODULE$.main(compulsoryParams);
+        //We launch the algorithm (I need to give it an array of String even if it is never used
+        Main$.MODULE$.main(args);
 
         //After the computation we take the result
         int[] result = Main$.MODULE$.result();

@@ -19,9 +19,9 @@ object Main {
   var result:Array[Int] = new Array[Int](1000) //SOlution dégeu pour y accéder à partir de java TODO
 
   def main(args: Array[String]){
-    val graphInfo = initGraphe("input.txt")
+    val graphInfo = initGraphe(args(0))
     val graph = new Graphe(graphInfo(1),graphInfo(2),graphInfo(3),graphInfo(4))
-    var CCs = Methaeuristic.GRASP.compute(3, graph, args(0).toInt)
+    var CCs = Methaeuristic.GRASP.compute(3, graph, args(1).toInt)
     CCs.foreach(cc => println(Methaeuristic.computeEdges(cc)))
     //CCs.foreach(cc => println("Prospectus : "+ cc.prospectusCovered + ", distance : " + cc.distCovered + ", compacity : "+ Methaeuristic.compacity(cc)))
 
