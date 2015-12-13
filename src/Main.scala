@@ -15,7 +15,7 @@ object Main {
     Array(info.map(x => x.toInt),head.map(x => x.toInt),succ.map(x => x.toInt),distance.map(x => x.toInt),prospectus.map(x => x.toInt),coordx.map(x => x.toInt),coordy.map(x => x.toInt))
   }
 
-  var result:Array[Int] = new Array[Int](100) //SOlution dégeu pour y accéder à partir de java TODO
+  var result:Array[Int] = new Array[Int](1000) //SOlution dégeu pour y accéder à partir de java TODO
 
   def main(args: Array[String]){
    val graphInfo = initGraphe("input.txt")
@@ -39,14 +39,13 @@ object Main {
     CCs.foreach(cc => println(Methaeuristic.computeEdges(cc)))
     //CCs.foreach(cc => println("Prospectus : "+ cc.prospectusCovered + ", distance : " + cc.distCovered + ", compacity : "+ Methaeuristic.compacity(cc)))
 
-
+    println("EST CE QUE CA MARCHE"+CCs(0).distCovered)
     /* Clem l'attrapeur */
 
     //Chaque entrée du tableau sera une liste de tuples (chaque compo connexe est une liste de tuples)
     var compoConnexesListes:Array[List[(Int,Int)]] = new Array[List[(Int,Int)]](graphInfo(0)(2))
     for(i<-0 to (graphInfo(0)(2)-1) ) {
         compoConnexesListes(i) = Methaeuristic.computeEdges(CCs(i))
-        println(compoConnexesListes(i))
     }
 
 
@@ -59,7 +58,7 @@ object Main {
         for(j<-0 to (graphInfo(1)(u+1)-graphInfo(1)(u)-1 ) ) {
             for(k<-0 to (graphInfo(0)(2)-1)) {
                 if(compoConnexesListes(k).contains(u,graphInfo(2)(acc))){
-                    result(acc-1) = k
+                    result(acc-1) = k+1
                 }
             }
 
@@ -67,6 +66,7 @@ object Main {
 
         }
     }
+
   }
 
   def dijkstraTest(D: Array[Array[Int]]): Unit ={
