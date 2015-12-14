@@ -30,11 +30,45 @@ class Gui extends JFrame{
         this.y = y;
         this.succ = succ;
         this.result = result;
-        JPanel panel = new JPanel();
-        getContentPane().add(panel);
+        JPanel panel =new DrawPane();
+        JScrollPane scroll = new JScrollPane(panel);
+        scroll.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+
+        add(scroll);
         setSize(1280,720);
     }
 
+    class DrawPane extends JPanel{
+        public void paintComponent(Graphics g){
+            this.setPreferredSize(new Dimension(3000,3000));
+            Graphics2D g2 = (Graphics2D) g;
+            int circleSize = 20; //Size of the circles containing the numbers
+            int fontSize = 12;
+            g2.setStroke(new BasicStroke(2)); //Stroke boldness
+            g2.setFont(new Font("Arial", Font.BOLD,fontSize ));
+
+            int acc = 0; //Accumulator giving the curent index (is incremented as we advance in the successor array)
+
+            for (int u = 0; u < head.length-1; u++) {
+                for (int j = 0; j < head[u+1]-head[u]; j++) {
+                    g2.setColor(colors[result[acc]]);
+                    g2.drawLine(50 + x[u] / 2, 50 + y[u] / 2, 50 + x[succ[acc]-1] / 2, 50 + y[succ[acc]-1] / 2);
+                    acc++;
+                }
+            }
+
+            for (int i = 0; i < x.length; i++) {
+                g2.setColor(Color.white); //We draw white circles (so the lines don't cross the circles)
+                g2.fillOval(-circleSize/2 +50+ x[i] / 2, -circleSize/2+50 + y[i] / 2,circleSize,circleSize);
+            }
+            for (int i = 0; i < x.length; i++) {
+                g2.setColor(Color.black);
+                g2.drawOval(-circleSize/2 +50+ x[i] / 2, -circleSize/2+50 + y[i] / 2,circleSize,circleSize);
+                g2.drawString(Integer.toString(i+1),-fontSize/2 + 50+ x[i] / 2, fontSize/2 +50 + y[i] / 2);
+            }
+        }
+    }
+/*
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D g2 = (Graphics2D) g;
@@ -63,7 +97,7 @@ class Gui extends JFrame{
             g2.drawString(Integer.toString(i+1),-fontSize/2 + 50+ x[i] / 2, fontSize/2 +50 + y[i] / 2);
         }
     }
-
+*/
     public static void main(String []args){
         String fileName = args[0];
 
